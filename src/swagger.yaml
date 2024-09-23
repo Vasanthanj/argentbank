@@ -1,0 +1,203 @@
+swagger: '2.0'
+info:
+  title: Bank Argent API documentation
+  description: Contains all available API endpoints in this codebase
+  version: '1.0.0'
+  termsOfService: 'http://swagger.io/terms/'
+host: localhost:3001
+basePath: /api/v1
+schemes:
+  - http
+
+paths:
+  /user/accounts/{accountId}/transactions:
+    get:
+      tags:
+        - Transaction Module
+      summary: Retrieve Transactions
+      description: API to view transactions for the current month.
+      parameters:
+        - name: accountId
+          in: path
+          required: true
+          description: Unique identifier of the user account.
+          type: string
+        - name: month
+          in: query
+          required: false
+          description: Month for which transactions are requested (defaults to current month if not provided).
+          type: string
+        - name: Authorization
+          in: header
+          required: true
+          description: Bearer token to authorize the request.
+          type: string
+
+      security:
+        - bearerAuth: []
+
+      responses:
+        '200':
+          description: Successful retrieval of transactions
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                accountId:
+                  type: string
+                  description: Unique identifier of the user account.
+                transactionId:
+                  type: number
+                  description: Unique identifier of the transaction.
+                amount:
+                  type: number
+                  format: float
+                  description: Amount of the transaction.
+                date:
+                  type: string
+                  format: date-time
+                  description: Date and time of the transaction.
+                description:
+                  type: object
+                  properties:
+                    title: 
+                      type: string
+                    type: 
+                      type: string
+                    category: 
+                      type: string
+                    note: 
+                      type: string
+                  description: Description of the transaction.
+        '401':
+          description: Unauthorized - Bearer token is missing or invalid.
+        '403':
+          description: Forbidden - The user does not have access to this account's transactions.
+        '500':
+          description: Internal Server Error
+
+  /user/accounts/{accountId}/transactions/{transactionId}:
+    get:
+      tags:
+        - Transaction Module
+      summary: Retrieve Transaction Details
+      description: API to view details of a specific transaction.
+      parameters:
+        - name: accountId
+          in: path
+          required: true
+          description: Unique identifier of the user account.
+          type: string
+        - name: transactionId
+          in: path
+          required: true
+          description: Unique identifier of the transaction.
+          type: string
+        - name: Authorization
+          in: header
+          required: true
+          description: Bearer token to authorize the request.
+          type: string
+
+      security:
+        - bearerAuth: []
+
+      responses:
+        '200':
+          description: Successful retrieval of transaction details
+          schema:
+            type: object
+            properties:
+              accountId:
+                type: string
+                description: Unique identifier of the user account.
+              transactionId:
+                type: number
+                description: Unique identifier of the transaction.
+              amount:
+                type: number
+                format: float
+                description: Amount of the transaction.
+              date:
+                type: string
+                format: date-time
+                description: Date and time of the transaction.
+              description:
+                type: object
+                properties:
+                  title: 
+                    type: string
+                  type: 
+                    type: string
+                  category: 
+                    type: string
+                  note: 
+                    type: string
+                description: Description of the transaction.
+        '401':
+          description: Unauthorized - Bearer token is missing or invalid.
+        '403':
+          description: Forbidden - The user does not have access to this transaction's details.
+        '500':
+          description: Internal Server Error
+
+    patch:
+      tags:
+        - Transaction Module
+      summary: Update Transaction Information
+      description: API to update details of a specific transaction.
+      parameters:
+        - name: accountId
+          in: path
+          required: true
+          description: Unique identifier of the user account.
+          type: string
+        - name: transactionId
+          in: path
+          required: true
+          description: Unique identifier of the transaction.
+          type: string
+        - name: Authorization
+          in: header
+          required: true
+          description: Bearer token to authorize the request.
+          type: string
+        - name: body
+          in: body
+          description: Payload to update transaction details.
+          required: true
+          schema:
+            type: object
+            properties:
+              category:
+                type: string
+              note:
+                type: string
+              
+
+      security:
+        - bearerAuth: []
+
+      responses:
+        '204':
+          description: Successful update of transaction details
+        '400':
+          description: Bad Request - The request payload is invalid.
+        '401':
+          description: Unauthorized - Bearer token is missing or invalid.
+        '403':
+          description: Forbidden - The user does not have access to update this transaction.
+        '404':
+          description: Not Found - The transaction does not exist.
+        '500':
+          description: Internal Server Error
+
+
+
+
+securityDefinitions:
+  bearerAuth:
+    type: apiKey
+    name: Authorization
+    in: header
